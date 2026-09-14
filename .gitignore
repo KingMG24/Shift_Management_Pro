@@ -4,7 +4,9 @@ build/
 cdk.out/
 .env
 .env.*
+!**/.env.example
 *.log
+*.tsbuildinfo
 .DS_Store
 .worktrees/
 .superpowers/

@@ -292,12 +292,17 @@ test('throws Unauthorized for an invalid token', async () => {
 });
 ```
 
-- [ ] **Step 5: Run test to verify it fails**
+- [ ] **Step 5: Install workspace dependencies**
+
+Run (from repo root): `npm install`
+Expected: completes without error; installs `backend`'s new dependencies (`jest`, `ts-jest`, `aws-jwt-verify`, etc.) into the workspace. Note: `npm install` may print a `workspaces` warning about `frontend`/`infra` not existing yet if those workspaces haven't been created — that is expected at this point in the plan and not a failure.
+
+- [ ] **Step 6: Run test to verify it fails**
 
 Run: `cd backend && npx jest src/authorizer/handler.test.ts`
 Expected: FAIL — `Cannot find module './handler'`
 
-- [ ] **Step 6: Write minimal implementation**
+- [ ] **Step 7: Write minimal implementation**
 
 ```typescript
 // backend/src/authorizer/handler.ts
@@ -340,15 +345,15 @@ export async function handler(
 }
 ```
 
-- [ ] **Step 7: Run test to verify it passes**
+- [ ] **Step 8: Run test to verify it passes**
 
 Run: `cd backend && npx jest src/authorizer/handler.test.ts`
 Expected: PASS (2 tests)
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add backend/package.json backend/tsconfig.json backend/jest.config.js backend/src/authorizer
+git add backend/package.json backend/tsconfig.json backend/jest.config.js backend/src/authorizer package-lock.json
 git commit -m "feat(backend): add custom Cognito Lambda authorizer"
 ```
 
@@ -458,7 +463,7 @@ git commit -m "feat(backend): add health and me Lambda handlers"
 **Interfaces:**
 - Produces: `EnvName = 'dev' | 'prod'` and `getEnvConfig(envName: EnvName): { envName: EnvName; stackName: (concern: string) => string }` in `infra/lib/config.ts`. `stackName('Data')` returns `ShiftManagementPro-Data-{envName}`.
 - Produces: `applyProjectTags(scope: IConstruct, envName: EnvName): void` in `infra/lib/tags.ts` — applies `Project=ShiftManagementPro`, `Environment=<envName>`, `ManagedBy=CDK`.
-- Consumed by: every stack task (5–9) calls `getEnvConfig` for its stack name and `applyProjectTags` on itself; Task 10 wires them all together.
+- Consumed by: every stack task (5–9) imports the `EnvName` type and calls `applyProjectTags` on itself; only Task 10 (`bin/app.ts`) calls `getEnvConfig` directly, to compute each stack's name before construction.
 
 - [ ] **Step 1: Write `infra/package.json`**
 
@@ -565,12 +570,17 @@ test('applies Project/Environment/ManagedBy tags to every resource in the stack'
 });
 ```
 
-- [ ] **Step 7: Run test to verify it fails**
+- [ ] **Step 7: Install workspace dependencies**
+
+Run (from repo root): `npm install`
+Expected: completes without error; installs `infra`'s new dependencies (`aws-cdk-lib`, `constructs`, `aws-cdk`, `esbuild`, `jest`, `ts-jest`, `ts-node`, etc.).
+
+- [ ] **Step 8: Run test to verify it fails**
 
 Run: `cd infra && npx jest test/tags.test.ts`
 Expected: FAIL — `Cannot find module '../lib/tags'`
 
-- [ ] **Step 8: Write minimal implementation**
+- [ ] **Step 9: Write minimal implementation**
 
 ```typescript
 // infra/lib/tags.ts
@@ -585,15 +595,15 @@ export function applyProjectTags(scope: IConstruct, envName: EnvName): void {
 }
 ```
 
-- [ ] **Step 9: Run test to verify it passes**
+- [ ] **Step 10: Run test to verify it passes**
 
 Run: `cd infra && npx jest test/tags.test.ts`
 Expected: PASS. Note: CDK applies stack-level tags alphabetically by key in synthesized output, matching the order asserted above.
 
-- [ ] **Step 10: Commit**
+- [ ] **Step 11: Commit**
 
 ```bash
-git add infra/package.json infra/tsconfig.json infra/cdk.json infra/jest.config.js infra/lib/config.ts infra/lib/tags.ts infra/test/tags.test.ts
+git add infra/package.json infra/tsconfig.json infra/cdk.json infra/jest.config.js infra/lib/config.ts infra/lib/tags.ts infra/test/tags.test.ts package-lock.json
 git commit -m "chore(infra): init CDK workspace, env config, and tagging aspect"
 ```
 
@@ -606,7 +616,7 @@ git commit -m "chore(infra): init CDK workspace, env config, and tagging aspect"
 - Test: `infra/test/data-stack.test.ts`
 
 **Interfaces:**
-- Consumes: `EnvName`, `getEnvConfig` from `infra/lib/config.ts` (Task 4); `applyProjectTags` from `infra/lib/tags.ts` (Task 4).
+- Consumes: `EnvName` type from `infra/lib/config.ts` (Task 4); `applyProjectTags` from `infra/lib/tags.ts` (Task 4). Does NOT call `getEnvConfig` — the table name is built directly from `envName`, not via `stackName()` (that helper is for CDK stack ids, not resource names).
 - Produces: `class DataStack extends Stack` with constructor `(scope, id, props: StackProps & { envName: EnvName })` and public field `table: dynamodb.Table`. Consumed by Task 10 (wiring) and available for future feature stacks.
 
 - [ ] **Step 1: Write the failing test**
@@ -653,7 +663,7 @@ Expected: FAIL — `Cannot find module '../lib/data-stack'`
 import { Stack, StackProps } from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import type { Construct } from 'constructs';
-import { getEnvConfig, type EnvName } from './config';
+import type { EnvName } from './config';
 import { applyProjectTags } from './tags';
 
 export interface DataStackProps extends StackProps {
