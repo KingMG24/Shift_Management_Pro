@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Stack, StackProps, Duration } from 'aws-cdk-lib';
+import { Stack, StackProps, Duration, CfnOutput } from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -66,6 +66,7 @@ export class ApiStack extends Stack {
     });
 
     this.apiUrl = api.url;
+    new CfnOutput(this, 'ApiUrl', { value: this.apiUrl });
     applyProjectTags(this, envName);
   }
 }

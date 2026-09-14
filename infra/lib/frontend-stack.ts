@@ -1,4 +1,4 @@
-import { Stack, StackProps, Aws } from 'aws-cdk-lib';
+import { Stack, StackProps, Aws, CfnOutput } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -32,6 +32,7 @@ export class FrontendStack extends Stack {
     });
 
     this.distributionDomainName = distribution.distributionDomainName;
+    new CfnOutput(this, 'DistributionDomainName', { value: this.distributionDomainName });
     applyProjectTags(this, envName);
   }
 }

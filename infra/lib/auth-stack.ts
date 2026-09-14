@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import type { Construct } from 'constructs';
 import type { EnvName } from './config';
@@ -36,6 +36,9 @@ export class AuthStack extends Stack {
       generateSecret: false,
       authFlows: { userSrp: true },
     });
+
+    new CfnOutput(this, 'UserPoolId', { value: this.userPool.userPoolId });
+    new CfnOutput(this, 'UserPoolClientId', { value: this.userPoolClient.userPoolClientId });
 
     applyProjectTags(this, envName);
   }
