@@ -4,5 +4,5 @@ import App from './App';
 
 test('renders the login form when no session exists', () => {
   render(<App />);
-  expect(screen.getByText('Sign in')).toBeDefined();
+  expect(screen.getByRole('heading', { name: 'Sign in' })).toBeDefined();
 });
