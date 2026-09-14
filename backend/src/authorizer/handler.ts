@@ -26,7 +26,7 @@ export async function handler(
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
             Resource: event.methodArn,
-          } as any,
+          },
         ],
       },
       context: { role, sub: payload.sub },
