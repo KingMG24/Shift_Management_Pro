@@ -33,7 +33,7 @@ export class ApiStack extends Stack {
 
     const tokenAuthorizer = new apigateway.TokenAuthorizer(this, 'Authorizer', {
       handler: authorizerFn,
-      resultsCacheTtl: Duration.minutes(5),
+      resultsCacheTtl: Duration.seconds(0),
     });
 
     const healthFn = new NodejsFunction(this, 'HealthFunction', {
