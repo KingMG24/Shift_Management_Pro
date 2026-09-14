@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
 import type { EnvName } from './config';
@@ -23,6 +24,7 @@ export class ApiStack extends Stack {
     const authorizerFn = new NodejsFunction(this, 'AuthorizerFunction', {
       entry: path.join(__dirname, '../../backend/src/authorizer/handler.ts'),
       handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_24_X,
       environment: {
         USER_POOL_ID: userPool.userPoolId,
         USER_POOL_CLIENT_ID: userPoolClient.userPoolClientId,
@@ -37,11 +39,13 @@ export class ApiStack extends Stack {
     const healthFn = new NodejsFunction(this, 'HealthFunction', {
       entry: path.join(__dirname, '../../backend/src/health/handler.ts'),
       handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_24_X,
     });
 
     const meFn = new NodejsFunction(this, 'MeFunction', {
       entry: path.join(__dirname, '../../backend/src/me/handler.ts'),
       handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_24_X,
     });
 
     const api = new apigateway.RestApi(this, 'Api', {
