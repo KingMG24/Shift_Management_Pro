@@ -1,0 +1,8 @@
+{
+  "name": "shiftmanagementpro",
+  "private": true,
+  "workspaces": ["frontend", "backend", "infra"],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  }
+}
