@@ -14,13 +14,16 @@ const envNames: EnvName[] = ['dev', 'prod'];
 for (const envName of envNames) {
   const { stackName } = getEnvConfig(envName);
 
-  const authStack = new AuthStack(app, stackName('Auth'), { envName });
-  new DataStack(app, stackName('Data'), { envName });
-  new StorageStack(app, stackName('Storage'), { envName });
+  const env = { region: 'ap-southeast-2' };
+
+  const authStack = new AuthStack(app, stackName('Auth'), { envName, env });
+  new DataStack(app, stackName('Data'), { envName, env });
+  new StorageStack(app, stackName('Storage'), { envName, env });
   new ApiStack(app, stackName('Api'), {
     envName,
+    env,
     userPool: authStack.userPool,
     userPoolClient: authStack.userPoolClient,
   });
-  new FrontendStack(app, stackName('Frontend'), { envName });
+  new FrontendStack(app, stackName('Frontend'), { envName, env });
 }
