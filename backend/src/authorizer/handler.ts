@@ -1,17 +1,19 @@
-import type { APIGatewayTokenAuthorizerEvent } from 'aws-lambda';
+import type {
+  APIGatewayAuthorizerResult,
+  APIGatewayTokenAuthorizerEvent,
+} from 'aws-lambda';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
-const getVerifier = () => {
-  return CognitoJwtVerifier.create({
-    userPoolId: process.env.USER_POOL_ID as string,
-    clientId: process.env.USER_POOL_CLIENT_ID as string,
-    tokenUse: 'access',
-  });
-};
+const verifier = CognitoJwtVerifier.create({
+  userPoolId: process.env.USER_POOL_ID as string,
+  clientId: process.env.USER_POOL_CLIENT_ID as string,
+  tokenUse: 'access',
+});
 
-export async function handler(event: APIGatewayTokenAuthorizerEvent) {
+export async function handler(
+  event: APIGatewayTokenAuthorizerEvent
+): Promise<APIGatewayAuthorizerResult> {
   try {
-    const verifier = getVerifier();
     const payload = await verifier.verify(event.authorizationToken);
     const role = (payload['cognito:groups'] as string[] | undefined)?.[0] ?? 'Unknown';
 
@@ -24,7 +26,7 @@ export async function handler(event: APIGatewayTokenAuthorizerEvent) {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
             Resource: event.methodArn,
-          },
+          } as any,
         ],
       },
       context: { role, sub: payload.sub },
