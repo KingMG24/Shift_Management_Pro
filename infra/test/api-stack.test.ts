@@ -1,6 +1,6 @@
 // infra/test/api-stack.test.ts
 import { App, Stack } from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { ApiStack } from '../lib/api-stack';
 
