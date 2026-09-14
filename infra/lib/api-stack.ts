@@ -50,6 +50,10 @@ export class ApiStack extends Stack {
 
     const api = new apigateway.RestApi(this, 'Api', {
       restApiName: `ShiftManagementPro-Api-${envName}`,
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowHeaders: [...apigateway.Cors.DEFAULT_HEADERS],
+      },
     });
 
     api.root
